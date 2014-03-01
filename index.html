@@ -7,6 +7,12 @@
 		socket.on('clients', function(data) {
 			document.getElementById('clients').value = data.clients;
 		});
+		socket.on('offer', function(data) {
+			/*connection.createAnswer(setLocalDescription, null, {});*/
+			console.log(data);
+			connection.setRemoteDescription(new RTCSessionDescription(data));
+			connection.createAnswer(setLocalDescriptionAnswer, null, {});
+		});
 
 		window.getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
 		window.RTCPeerConnection = webkitRTCPeerConnection;
@@ -22,12 +28,21 @@
 			socket.emit('offer', sessionDescription);
 		};
 
+		var setLocalDescriptionAnswer = function(sessionDescription) {
+			connection.setREmoteDescription(new RTCSessionDescription(data));
+		};
+
 		var createPeerConnection = function () {
 			window.connection = new RTCPeerConnection({
 				iceServers:[{url: "stun:stun.l.google.com:19302"}]
 			});
 			console.log(connection);
-			connection.createOffer(setLocalDescription, null, {});
+/*			connection.createOffer(setLocalDescription, null, {});*/		}
+
+		function doCall() {
+			if (clients == 2) {
+				connection.createOffer(setLocalDescription, null, {});
+			}
 		}
 		getUserMedia({audio: true, video: true}, onUserMediaSuccess, onUserMediaFailure);
 	</script>

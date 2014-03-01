@@ -29,7 +29,13 @@ var rtc = io
 			clients--;
 			socket.broadcast.emit('disconnected', {clients: clients});
 		});
-		socket.emit('connected', {clients: clients})
+		socket.on('offer', function(data) {
+			socket.broadcast.emit('offer', data);
+		});
+		socket.on('answer', function(data) {
+			socket.broadcast.emit('answer', data);
+		});
+		/*socket.emit('connected', {clients: clients})*/
 		/*socket.on('offer', function(data){
 			console.log(data);
 		})*/
