@@ -1,0 +1,39 @@
+<html>
+<head></head>
+<body>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		var socket = io.connect('http://localhost:8080/rtc');
+		socket.on('clients', function(data) {
+			document.getElementById('clients').value = data.clients;
+		});
+
+		window.getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
+		window.RTCPeerConnection = webkitRTCPeerConnection;
+		var onUserMediaSuccess = function (stream) {
+			document.getElementById('localvideo').src = webkitURL.createObjectURL(stream);
+			createPeerConnection();
+		}
+		var onUserMediaFailure = function(error) { console.log(error); };
+		
+		var setLocalDescription = function(sessionDescription) {
+			connection.setLocalDescription(sessionDescription);
+			console.log(sessionDescription);
+			socket.emit('offer', sessionDescription);
+		};
+
+		var createPeerConnection = function () {
+			window.connection = new RTCPeerConnection({
+				iceServers:[{url: "stun:stun.l.google.com:19302"}]
+			});
+			console.log(connection);
+			connection.createOffer(setLocalDescription, null, {});
+		}
+		getUserMedia({audio: true, video: true}, onUserMediaSuccess, onUserMediaFailure);
+	</script>
+	<video id='localvideo' autoplay="" style="width: 200px; height: 200px; border: 1px solid black">
+	</video>
+	<video id='remotevideo' autoplay="" style="width: 200px; height: 200px; border: 1px solid black">
+	</video>
+</body>
+</html>
